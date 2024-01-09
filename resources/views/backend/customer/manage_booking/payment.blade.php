@@ -27,7 +27,7 @@
                         </thead>
                         <tbody>
                             {{ Form::open(array('method'=>'POST', 'url' => route('customer.payment.pay', $rent->id), 'files' => true)) }}
-                            <?php $total_price = 0 ; ?>
+                            <?php $total_price = 0 ; $diskon = 0; $hargaAwal = 0;?>
                             @foreach ($rent->RentDetail as $detail)
                             <tr>
                                 <td class="product-col">
@@ -42,9 +42,13 @@
                             <input type="hidden" value="{{$detail->OpeningHourDetail->id}}" name="details[]">
                             <input type="hidden" value="{{$rent->started_at}}" name="date">
                             <?php
-                                $total_price = $total_price + $detail->OpeningHourDetail->price;
+                                $hargaAwal = $hargaAwal + $detail->OpeningHourDetail->price;
                             ?>
                             @endforeach
+                        <?php
+                            $total_price = $total_price + $rent->total_price;
+                            $diskon = $hargaAwal - $total_price
+                        ?>
                         </tbody>
                     </table><!-- End .table table-wishlist -->
                 </div><!-- End .col-lg-9 -->
@@ -66,6 +70,14 @@
                                 <tr class="summary-shipping-row">
                                     <td>Tanggal :</td>
                                     <td>{{date('d M Y',strtotime($rent->created_at))}}</td>
+                                </tr>
+                                <tr class="summary-total">
+                                    <td>Harga Awal :</td>
+                                    <td>{{Helper::rupiah($hargaAwal)}}</td>
+                                </tr>
+                                <tr style="color:red;">
+                                    <td>Diskon :</td>
+                                    <td>{{Helper::rupiah($diskon)}}</td>
                                 </tr>
                                 <tr class="summary-total">
                                     <td>Total :</td>

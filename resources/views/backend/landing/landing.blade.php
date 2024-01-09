@@ -6,12 +6,12 @@
 
 @section('content')
 <nav aria-label="breadcrumb" class="breadcrumb-nav mb-3">
+    @include('layouts.landing.header.header')
     <div class="container">
     </div><!-- End .container -->
 </nav><!-- End .breadcrumb-nav -->
 
-<div class="header-bottom sticky-header bg-info">
-    @include('layouts.landing.header.header')
+<div class="">
 </div><!-- End .header-bottom -->
 
 <div class="page-content">
