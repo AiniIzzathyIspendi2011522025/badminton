@@ -24,6 +24,11 @@ class Rent extends Model
         return $this->hasOne(RentPayment::class, 'rent_id', 'id');
     }
 
+    public function Promo ()
+    {
+        return $this->hasOne( Promo::class, 'promo_id', 'id');
+    }
+
     public function History()
     {
         return $this->hasOne(History::class, 'rent_id', 'id');
@@ -36,5 +41,5 @@ class Rent extends Model
 
         return $result;
     }
-    
+
 }

@@ -17,6 +17,7 @@ class CreateRentsTable extends Migration
             $table->increments('id');
             $table->string('token')->unique();
             $table->integer('field_id')->unsigned();
+            $table->integer("promo_id")->unsigned()->nullable();
             $table->string('tenant_name', 50);
             $table->string('payment')->nullable();
             $table->date('date');
@@ -28,6 +29,7 @@ class CreateRentsTable extends Migration
             $table->timestamps();
 
             $table->foreign('field_id')->references('id')->on('fields')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('promo_id')->references('id')->on('promo')->onUpdate('cascade')->onDelete('cascade');
         });
     }
 

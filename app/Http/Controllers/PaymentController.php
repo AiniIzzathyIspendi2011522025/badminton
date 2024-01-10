@@ -12,6 +12,7 @@ use App\Models\PaymentMethodDetail;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use App\Mail\NotifyMail;
+use App\Models\Promo;
 
 class PaymentController extends Controller
 {
@@ -22,7 +23,7 @@ class PaymentController extends Controller
         //     'title' => 'Mail from websitepercobaan.com',
         //     'body' => 'This is for testing email using smtp'
         // ];
-        
+
         // \Mail::to('fahiravelia@gmail.com')->send(new \App\Mail\NotifyMail($details));
         return view('backend.customer.manage_booking.payment', compact('rent'));
     }
@@ -34,7 +35,7 @@ class PaymentController extends Controller
                 if($request->status == 2){
                     $rent->dp = $request->dp;
                 }
-                
+
                 $dir = public_path().'/images/payment';
                 $file = $request->file('payment');
                 if($file){
@@ -52,7 +53,7 @@ class PaymentController extends Controller
             }else{
                 return redirect()->back('error', 'Batas waktu pembayaran telah berakhir');
             }
-            
+
         } catch (\Exception $e) {
             dd($e);
             return redirect()->back('error', __('toast.create.failed.message'));
@@ -62,17 +63,17 @@ class PaymentController extends Controller
     public function booking(Request $request){
         try{
             $rents = Rent::all();
+            $promo = Promo::where('kode', 'AINI')->first();
             $details = OpeningHourDetail::whereIn('id', $request->detail_id)->get();
             $rent = new Rent;
             $rent->field_id = $details[0]->field_id;
             $rent->tenant_name = Auth::user()->customer->first_name.' '.Auth::user()->customer->last_name;
             $rent->date = $request->date;
-            $rent->total_price = $details->sum('price');
+            $rent->total_price = ($details->sum('price') - ($details->sum('price') * $promo->diskon));
             $rent->token = Carbon::now()->format('dmyHis').''.(string) ($rents->count()+1).''.$request->select_field.''.$details[0]->Field->Venue->id;
-            //dd($rent->total_price);
             if($request->status == 2){
             }
-            
+
             $dir = public_path().'/images/payment';
             $rent->dp = $request->dp;
             $file = $request->file('payment');
@@ -81,7 +82,8 @@ class PaymentController extends Controller
                 $file->move($dir, $fileName);
                 $rent->payment = $fileName;
             }
-            
+
+            // ddd($rent);
             $rent->save();
             foreach($details as $detail)
             {
@@ -100,7 +102,7 @@ class PaymentController extends Controller
         } catch (\Exception $e) {
             return redirect()->back('error', __('toast.create.failed.message'));
         }
-        
+
     }
 
 }
